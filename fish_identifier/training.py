@@ -122,4 +122,45 @@ def main():
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)#AdamW optimzer with specified learning rate and weight decay
 
     #---training loop---
-    
+    best_val_acc=0.0 #keeps ttrack of the best validation accuracy achieved during training
+    last_path = os.path.join(args.out_dir, "last.pt") #file path to save the last checkpoint
+    best_path = os.path.join(args.out_dir, "best.pt") #file path to save the best checkpoint
+
+    t_start = time.time() #records the start time of the training
+    for epoch in range(1, args.epochs + 1): #loops over the number of epochs specified
+        t0 = time.time() #records the start time of the epoch
+        tr_loss, tr_acc = train_one_epoch(model, train_loader, criterion, optimizer, device) #trains the model for one epoch and returns the training loss and accuracy
+        va_loss, va_acc = evaluate(model, val_loader, criterion, device) #evaluates the model on the validation set and returns the validation loss and accuracy
+
+        save_checkpoint(last_path, model, optimizer, epoch, best_val_acc, class_names) #saves the last checkpoint
+
+        #save best if validation improves
+        if va_acc > best_val_acc: #checks if the current validation accuracy is better than the best recorded
+            best_val_acc = va_acc #updates the best validation accuracy
+            save_checkpoint(best_path, model, optimizer, epoch, best_val_acc, class_names) #saves the best checkpoint
+
+        #track log
+        print(
+            f"Epoch {epoch:03d}/{args.epochs} | " #logs the epoch number and total epochs
+            f"train {tr_loss:.4f}, {tr_acc:.4f} | " #logs the training loss and accuracy
+            f"val {va_loss:.4f}/{va_acc:.4f} | " #logs the validation loss and accuracy
+            f"{time.time() - t0:.1f}s" #logs the time taken for the epoch
+        )
+    #---test with best checkpoint (if available)---
+    if os.path.exists(best_path): #checks if the best checkpoint file exists
+        ckpt = torch.load(best_path, map_loacation=device) #loads the best checkpoint
+        model.load_state_dict(ckpt["model_state"]) #loads the model weight from the checkpoint
+
+    te_loss, te_acc = evaluate(model, test_loader, criterion, device) #evaluates the model on the test set and returns the test loss and accuracy
+    mins = (time.time() - t_start) / 60 #calculates the total tarining time in minutes
+    print(f"\nTest: loss {te_loss:.4f}, acc {te_acc:.4f} | total {mins:.1f} min") #logs the test loss, accuracy and total tarining time
+
+    #---export compact inference file---
+    os.makedirs(args.out_dir, exist_ok=True) #ensures the output directory exists, creates it if it doesnt
+    export_path = os.path.join(args.out_dir, "model_fish_inference.pt") #file path to save the compact inference model
+    torch.save({"model_state": model.state_dict(), "class_names": class_names}, export_path) #saves the model weights and class names to the specified path
+    print(f"Saved inference model to: {os.path.abspath(export_path)}") #logs the absolute path of the saved inference model
+
+    #end of main()
+    if __name__ == "__main__":
+        main()
