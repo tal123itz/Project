@@ -1,2 +1,3 @@
-import tkinter
-imoprt pillow
+torch
+torchvision
+pillow

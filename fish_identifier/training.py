@@ -13,7 +13,7 @@ def build_model(num_classes: int, freeze_backbone: bool = False) -> nn.Module:#n
     weights = ResNet50_Weights.IMAGENET1K_V2 #loads a pretrained weight that is better for image proccessing
     model = resnet50(weights=weights) #gives me the resnet50 model with convolutional layers and a fc layer with space for 1000 classes
 
-    if feeze_backbone:#stops the weights of the convolutional layers from being updated during training(except the final layer), better for small datasets
+    if freeze_backbone:#stops the weights of the convolutional layers from being updated during training(except the final layer), better for small datasets
         for p in model.parameters():#model.parameters() represents all the weights in the model
             p.requires_grad = False#tells pytorch to not update the weights
 
@@ -71,7 +71,7 @@ def evaluate(model, loader, criterion, device): #model: the cnn model to be eval
         total_correct += (preds == targets).sum().item() #compares the predicted classes with the true labels, sums the number of correct predictions and adds it to toal_correct
 
         #continues updating the total loss and accuracy
-        bs=image.size(0) #gets the batch size(num of images in batch)
+        bs=images.size(0) #gets the batch size(num of images in batch)
         total_seen += bs #adds the batch size to total_seen
         total_loss += loss.item() * bs #adds the loss for the current batch to total_loss
 
@@ -99,7 +99,7 @@ def save_checkpoint(path,model,optimizer,epoch,best_val_acc,class_names): #path:
 def main():
     #---CLI---(command line interface)
     ap = argparse.ArgumentParser(description="Fine tune ResNet50 on an ImageFolder fish dataset")#creates an argument parser object that will handle command line arguments
-    ap.add_argument("--date-root", type=str, default="data/fish", help="Folder with train/val/test")#path to the dataset folder, contains subfolders for training, validation and testing data
+    ap.add_argument("--data-root", type=str, default="data/fish", help="Folder with train/val/test")#path to the dataset folder, contains subfolders for training, validation and testing data
     ap.add_argument("--image-size", type=int, default=224, help="Model input size (ResNet50=224)")#size of input images, ResNet50 expects 224x224 images
     ap.add_argument("--batch-size", type=int, default=32, help="Batch size") #number of samples processed before the weights are updates
     ap.add_argument("--epochs", type=int, default=15, help="Number of training epochs") #number of times the entire training dataset is passed through the model

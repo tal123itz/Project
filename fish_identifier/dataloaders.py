@@ -34,7 +34,7 @@ def _eval_transform(img_size=224): #helper that builds a pipeline for evaluation
     ])
 
 #building the dataloaders
-def build_loaders(root="data/fish", img_size=224, batch_size=32): #main function to build dataloaders
+def build_loaders(root="Dataset", img_size=224, batch_size=32): #main function to build dataloaders
     """
     Returns:
       train_loader, val_loader, test_loader, class_names
@@ -62,4 +62,4 @@ def build_loaders(root="data/fish", img_size=224, batch_size=32): #main function
     test_loader  = DataLoader(test_ds,  batch_size=batch_size, shuffle=False,
                             num_workers=num_workers, pin_memory=pin)
     
-    
+    return train_loader, val_loader, test_loader, class_names
