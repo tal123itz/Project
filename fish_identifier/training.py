@@ -113,7 +113,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu") #sets the computing device to GPU if available, otherwise uses CPU
 
     train_loader, val_loader, test_loader, class_names = build_loaders(
-        root=args.data_root, img_size=args.img_size, batch_size=args.batch_size
+        root=args.data_root, img_size=args.image_size, batch_size=args.batch_size
     )#returns three dataloaders ready for training, and a list of class names
 
     #---model, loss, optimizer---
