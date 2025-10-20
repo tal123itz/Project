@@ -91,7 +91,7 @@ button = Button(root, text="Load Image", command=loadImage)#creates a button ins
 button.pack(pady=10)#adds the button into the window with vertical padding
 
 label = Label(root)#creates a lebel inside the root that will hold the image
-label.pack#adds the label(image) into the window
+label.pack()#adds the label(image) into the window
 
 #text label for predictions
 result_label = Label(root, text="", justify="left", font=("Segoe UI", 10)) #creates a label to display prediction results

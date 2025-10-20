@@ -99,7 +99,7 @@ def save_checkpoint(path,model,optimizer,epoch,best_val_acc,class_names): #path:
 def main():
     #---CLI---(command line interface)
     ap = argparse.ArgumentParser(description="Fine tune ResNet50 on an ImageFolder fish dataset")#creates an argument parser object that will handle command line arguments
-    ap.add_argument("--data-root", type=str, default="data/fish", help="Folder with train/val/test")#path to the dataset folder, contains subfolders for training, validation and testing data
+    ap.add_argument("--data-root", type=str, default="Dataset", help="Folder with train/val/test")#path to the dataset folder, contains subfolders for training, validation and testing data
     ap.add_argument("--image-size", type=int, default=224, help="Model input size (ResNet50=224)")#size of input images, ResNet50 expects 224x224 images
     ap.add_argument("--batch-size", type=int, default=32, help="Batch size") #number of samples processed before the weights are updates
     ap.add_argument("--epochs", type=int, default=15, help="Number of training epochs") #number of times the entire training dataset is passed through the model
@@ -148,7 +148,7 @@ def main():
         )
     #---test with best checkpoint (if available)---
     if os.path.exists(best_path): #checks if the best checkpoint file exists
-        ckpt = torch.load(best_path, map_loacation=device) #loads the best checkpoint
+        ckpt = torch.load(best_path, map_location=device) #loads the best checkpoint
         model.load_state_dict(ckpt["model_state"]) #loads the model weight from the checkpoint
 
     te_loss, te_acc = evaluate(model, test_loader, criterion, device) #evaluates the model on the test set and returns the test loss and accuracy
@@ -162,5 +162,5 @@ def main():
     print(f"Saved inference model to: {os.path.abspath(export_path)}") #logs the absolute path of the saved inference model
 
     #end of main()
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
